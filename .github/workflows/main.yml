@@ -1,0 +1,18 @@
+name: Run R Script
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up R
+      uses: r-lib/actions/setup-r@v1
+    - name: Install dependencies
+      run: install.packages("readxl")
+    - name: Run R script
+      run: Rscript path/to/your/script.R
