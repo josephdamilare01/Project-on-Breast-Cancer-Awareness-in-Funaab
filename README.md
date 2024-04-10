@@ -1,3 +1,4 @@
+# Unpacking neccessary packages
 library(tidyverse)
 library(summarytools)
 library(readxl)
@@ -10,7 +11,7 @@ library(vcd)
 
 awareness <- read_excel(file.choose())
 
-
+# Renaming the column titles
 renamed <- awareness %>% select(Timestamp, Duration, Gender=`What is your gender?`,
                                  Age=`What is your age range?`,
                                  `Knowledge of BC`=`Do you have Knowledge regarding breast cancer?`,
@@ -26,16 +27,17 @@ renamed <- awareness %>% select(Timestamp, Duration, Gender=`What is your gender
                         `Discharge in Nipple`=`Have you ever observed a discharge in the nipples?`,
                         `Nipple position change`=`Do you observe a change in the position of the nipples recently?`,
                         `Color Discharge`=`If yes, what's the color of discharge observed?`)
+# Examing the percentage of missing values in each variables
 plot(vis_miss(renamed%>%select(-c(Timestamp,Duration))))
 plot_na_pareto(renamed%>%select(-c(Timestamp,Duration)), only_na = T)
 plot_na_pareto(renamed%>%select(-c(Timestamp,Duration)), col="blue")
-
+# Another way of viewing the percentage
 J <- renamed %>% 
   diagnose %>% 
   arrange(desc(missing_count))
 
 print(J)
-
+# Count of Responses collected over the period
 p <- awareness %>% select(Duration) %>% group_by(Duration) %>% 
   summarize( n = n()) %>% as.data.frame() 
 p$Duration <- as.Date(p$Duration)
@@ -50,11 +52,10 @@ scale_x_date(date_breaks = "15 day", date_labels = "%Y-%m-%d") +
         axis.text.x = element_text(color = "black", face = "bold", size =14),
         axis.text.y = element_text(color = "black", face = "bold", size =14))
 
-awareness
-######Descritpive Analysis
-#Gender
+# Descritpive Analysis
+## Gender
 dfSummary(awareness$`What is your gender?`)
-#AGE
+## AGE
 renamed %>% select(Age)%>% drop_na() %>% dfSummary()
 renamed %>% select(`Knowledge of BC`)%>% drop_na() %>% dfSummary()
 renamed%>% select(`Knowledge of BC`)%>% drop_na() %>% group_by(`Knowledge of BC`) %>% summarise(count = n()) %>%
@@ -66,7 +67,7 @@ renamed%>% select(`Knowledge of BC`)%>% drop_na() %>% group_by(`Knowledge of BC`
     axis.title.y = element_blank(), 
     axis.text.x = element_text(color = "black", face = "bold", size =14),
     axis.text.y = element_text(color = "black", face = "bold", size =14))
-
+## Do you have Knowledge regarding breast self-examination?
 renamed %>% select(`Knowledge BSE`)%>% drop_na() %>% dfSummary()
 renamed%>% select(`Knowledge BSE`)%>% drop_na()%>% group_by(`Knowledge BSE`) %>% summarise(count = n()) %>%
   mutate(percent = (count / sum(count) * 100)) %>% arrange(percent)%>% ggplot(aes(x=reorder(`Knowledge BSE`, percent), y= percent))+geom_bar(stat="identity", fill="red")+
@@ -77,7 +78,7 @@ renamed%>% select(`Knowledge BSE`)%>% drop_na()%>% group_by(`Knowledge BSE`) %>%
     axis.title.y = element_blank(), 
     axis.text.x = element_text(color = "black", face = "bold", size =14),
     axis.text.y = element_text(color = "black", face = "bold", size =14))
-
+## "Have you ever practiced breast self-examination?
 renamed %>% select(`Practice BSE`)%>% drop_na() %>% dfSummary()
 renamed%>%  select(`Practice BSE`)%>% drop_na() %>% group_by(`Practice BSE`) %>% summarise(count = n()) %>%
   mutate(percent = (count / sum(count) * 100)) %>% arrange(percent)%>% ggplot(aes(x=reorder(`Practice BSE`, percent), y= percent))+geom_bar(stat="identity", fill="red")+
@@ -88,7 +89,7 @@ renamed%>%  select(`Practice BSE`)%>% drop_na() %>% group_by(`Practice BSE`) %>%
     axis.title.y = element_blank(), 
     axis.text.x = element_text(color = "black", face = "bold", size =14),
     axis.text.y = element_text(color = "black", face = "bold", size =14))
-
+## Do you perform breast self-examination regularly?
 renamed %>% select(`Regularly PBSE`)%>% drop_na() %>% dfSummary()
 renamed%>%  select(`Regularly PBSE`)%>% drop_na() %>% group_by(`Regularly PBSE`) %>% summarise(count = n()) %>%
   mutate(percent = (count / sum(count) * 100)) %>% arrange(percent)%>% ggplot(aes(x=reorder(`Regularly PBSE`, percent), y= percent))+geom_bar(stat="identity", fill="red")+
@@ -99,7 +100,7 @@ renamed%>%  select(`Regularly PBSE`)%>% drop_na() %>% group_by(`Regularly PBSE`)
     axis.title.y = element_blank(), 
     axis.text.x = element_text(color = "black", face = "bold", size =14),
     axis.text.y = element_text(color = "black", face = "bold", size =14))
-
+## which body posture do you obtain in performing the breast self-examination?
 renamed %>% select(`Posture PBSE`)%>% drop_na() %>% dfSummary()
 renamed%>% select(`Posture PBSE`)%>% drop_na() %>% group_by(`Posture PBSE`) %>% summarise(count = n()) %>%
   mutate(percent = (count / sum(count) * 100)) %>% arrange(percent)%>% ggplot(aes(x=reorder(`Posture PBSE`, percent), y= percent))+geom_bar(stat="identity", fill="red")+
@@ -110,7 +111,7 @@ renamed%>% select(`Posture PBSE`)%>% drop_na() %>% group_by(`Posture PBSE`) %>% 
     axis.title.y = element_blank(), 
     axis.text.x = element_text(color = "black", face = "bold", size =14),
     axis.text.y = element_text(color = "black", face = "bold", size =14))
-
+## what is the best time you perform the breast self-examination?
 renamed %>% select(`Time PBSE`)%>% drop_na() %>% dfSummary()
 renamed%>%  select(`Time PBSE`)%>% drop_na() %>% group_by(`Time PBSE`) %>% summarise(count = n()) %>%
   mutate(percent = (count / sum(count) * 100)) %>% arrange(percent)%>% ggplot(aes(x=reorder(`Time PBSE`, percent), y= percent))+geom_bar(stat="identity", fill="red")+
@@ -121,7 +122,7 @@ renamed%>%  select(`Time PBSE`)%>% drop_na() %>% group_by(`Time PBSE`) %>% summa
     axis.title.y = element_blank(), 
     axis.text.x = element_text(color = "black", face = "bold", size =14, angle = 45, hjust=1),
     axis.text.y = element_text(color = "black", face = "bold", size =14))
-
+## `What reason for not practicing the self breast examination?
 renamed %>% select(`Reason not PSBE`)%>% drop_na() %>% dfSummary()
 renamed%>%  select(`Reason not PSBE`)%>% drop_na() %>% group_by(`Reason not PSBE`) %>% summarise(count = n()) %>%
   mutate(percent = (count / sum(count) * 100)) %>% arrange(percent)%>% ggplot(aes(x=reorder(`Reason not PSBE`, percent), y= percent))+geom_bar(stat="identity", fill="red")+
@@ -132,7 +133,7 @@ renamed%>%  select(`Reason not PSBE`)%>% drop_na() %>% group_by(`Reason not PSBE
     axis.title.y = element_blank(), 
     axis.text.x = element_text(color = "black", face = "bold", size =14),
     axis.text.y = element_text(color = "black", face = "bold", size =14))
-
+## Have you ever been diagnosed with lumps in the breast?
 renamed %>% select(`Diagnosed with lumps`)%>% drop_na() %>% dfSummary()
 renamed%>% select(`Diagnosed with lumps`)%>% drop_na() %>% group_by(`Diagnosed with lumps`) %>% summarise(count = n()) %>%
   mutate(percent = (count / sum(count) * 100)) %>% arrange(percent)%>% ggplot(aes(x=reorder(`Diagnosed with lumps`, percent), y= percent))+geom_bar(stat="identity", fill="red")+
@@ -143,7 +144,7 @@ renamed%>% select(`Diagnosed with lumps`)%>% drop_na() %>% group_by(`Diagnosed w
     axis.title.y = element_blank(), 
     axis.text.x = element_text(color = "black", face = "bold", size =14),
     axis.text.y = element_text(color = "black", face = "bold", size =14))
-
+## Do you have a family history of cancer?
 renamed %>% select(`Family history`)%>% drop_na() %>% dfSummary()
 renamed%>% select(`Family history`)%>% drop_na()  %>% group_by(`Family history`) %>% summarise(count = n()) %>%
   mutate(percent = (count / sum(count) * 100)) %>% arrange(percent)%>% ggplot(aes(x=reorder(`Family history`, percent), y= percent))+geom_bar(stat="identity", fill="red")+
@@ -154,7 +155,7 @@ renamed%>% select(`Family history`)%>% drop_na()  %>% group_by(`Family history`)
     axis.title.y = element_blank(), 
     axis.text.x = element_text(color = "black", face = "bold", size =14),
     axis.text.y = element_text(color = "black", face = "bold", size =14))
-
+## which of the breast screening methods have heard about
 renamed %>% select(`Screening method`)%>% drop_na() %>% dfSummary()
 renamed%>% select(`Screening method`)%>% drop_na() %>% group_by(`Screening method`) %>% summarise(count = n()) %>%
   mutate(percent = (count / sum(count) * 100)) %>% arrange(percent)%>% ggplot(aes(x=reorder(`Screening method`, percent), y= percent))+geom_bar(stat="identity", fill="red")+
@@ -165,7 +166,7 @@ renamed%>% select(`Screening method`)%>% drop_na() %>% group_by(`Screening metho
     axis.title.y = element_blank(), 
     axis.text.x = element_text(color = "black", face = "bold", size =14),
     axis.text.y = element_text(color = "black", face = "bold", size =14))
-
+## Have you ever observed a discharge in the nipples?")
 renamed %>% select(`Discharge in Nipple`)%>% drop_na() %>% dfSummary()
 renamed%>% select(`Discharge in Nipple`) %>%drop_na() %>% group_by(`Discharge in Nipple`) %>% summarise(count = n()) %>%
   mutate(percent = (count / sum(count) * 100)) %>% arrange(percent)%>% ggplot(aes(x=reorder(`Discharge in Nipple`, percent), y= percent))+geom_bar(stat="identity", fill="red")+
@@ -176,7 +177,7 @@ renamed%>% select(`Discharge in Nipple`) %>%drop_na() %>% group_by(`Discharge in
     axis.title.y = element_blank(), 
     axis.text.x = element_text(color = "black", face = "bold", size =14),
     axis.text.y = element_text(color = "black", face = "bold", size =14))
-
+## "Do you observe a change in the position of the nipples recently?
 renamed %>% select(`Nipple position change`)%>% drop_na() %>% dfSummary()
 renamed%>% select(`Nipple position change`) %>%drop_na() %>% group_by(`Nipple position change`) %>% summarise(count = n()) %>%
   mutate(percent = (count / sum(count) * 100)) %>% arrange(percent)%>% ggplot(aes(x=reorder(`Nipple position change`, percent), y= percent))+geom_bar(stat="identity", fill="red")+
@@ -187,7 +188,7 @@ renamed%>% select(`Nipple position change`) %>%drop_na() %>% group_by(`Nipple po
     axis.title.y = element_blank(), 
     axis.text.x = element_text(color = "black", face = "bold", size =14),
     axis.text.y = element_text(color = "black", face = "bold", size =14))
-
+## If yes, what's the color of discharge observed?")
 renamed %>% select(`Color Discharge`)%>% drop_na() %>% dfSummary()
 renamed%>% select(`Color Discharge`) %>%drop_na() %>% group_by(`Color Discharge`) %>% summarise(count = n()) %>%
   mutate(percent = (count / sum(count) * 100)) %>% arrange(percent)%>% ggplot(aes(x=reorder(`Color Discharge`, percent), y= percent))+geom_bar(stat="identity", fill="red")+
@@ -199,8 +200,6 @@ renamed%>% select(`Color Discharge`) %>%drop_na() %>% group_by(`Color Discharge`
     axis.text.x = element_text(color = "black", face = "bold", size =14),
     axis.text.y = element_text(color = "black", face = "bold", size =14))
 
-
-
 renamed%>% select(Age) %>%drop_na() %>% group_by(Age) %>% summarise(count = n()) %>%
   mutate(percent = (count / sum(count) * 100)) %>% arrange(percent)%>% ggplot(aes(x=reorder(Age, percent), y= percent))+geom_bar(stat="identity", fill="red")+
   geom_text(aes(label = paste0(round(percent,1), "%")), size =5, vjust=-0.9, col = "black") +
@@ -211,13 +210,9 @@ renamed%>% select(Age) %>%drop_na() %>% group_by(Age) %>% summarise(count = n())
     axis.text.x = element_text(color = "black", face = "bold", size =14),
     axis.text.y = element_text(color = "black", face = "bold", size =14))
 
-###Recoding: Changing the labels to diachotomous, polychotomous, trichotomous  variables 
+# Recoding: Changing the labels to diachotomous, polychotomous, trichotomous  variables 
 
-###Dropping empty values
- renamed <- drop_na(renamed)
-###Checking the sample size left after dropping the empty
-before <- awareness %>% count()
-after <- renamed %>% count()
+
 Sample_left <- 
  renamed_decoded <- renamed %>%
    mutate(
@@ -238,11 +233,11 @@ Sample_left <-
    )
  
 
-###Removing Timestamp, Duration, and Gender
+## Removing Timestamp, Duration, and Gender
 renamed_decoded <- renamed_decoded %>% select(-c(Timestamp, Duration, Gender))
-#Do you have Knowledge regarding breast self-examination?
+# Effect of Knowledge regarding breast self-examination?
 
-# Create a contingency table
+## Create a contingency table
 
 cont_table1 <- table(renamed_decoded$`Knowledge of BC`, renamed_decoded$Age) 
 cont_table2 <- table(renamed_decoded$`Knowledge of BC`, renamed_decoded$`Practice BSE` ) 
@@ -258,7 +253,7 @@ cont_table11 <-table(renamed_decoded$`Knowledge of BC`, renamed_decoded$`Nipple 
 cont_table12 <-table(renamed_decoded$`Knowledge of BC`, renamed_decoded$`Color Discharge`) 
 
 
-# Calculate Cramer's V statistic
+## Calculate Cramer's V statistic
 assocstats(cont_table1)$chisq_tests
 assocstats(cont_table2)$chisq_tests
 assocstats(cont_table3)$chisq_tests
@@ -271,7 +266,7 @@ assocstats(cont_table9)$chisq_tests
 assocstats(cont_table10)$chisq_tests
 assocstats(cont_table11)$chisq_tests
 assocstats(cont_table12)$chisq_tests
-# Cramer'V
+## Cramer'V
 a<-assocstats(cont_table1)$cramer
 b<-assocstats(cont_table2)$cramer
 c<-assocstats(cont_table3)$cramer
@@ -285,7 +280,7 @@ j<-assocstats(cont_table10)$cramer
 k<-assocstats(cont_table11)$cramer
 l<-assocstats(cont_table12)$cramer
 
-# Contingency Coeff.
+## Contingency Coeff.
 aa<-assocstats(cont_table1)$contingency
 ba<-assocstats(cont_table2)$contingency
 ca<-assocstats(cont_table3)$contingency
@@ -298,7 +293,7 @@ ia<-assocstats(cont_table9)$contingency
 ja<-assocstats(cont_table10)$contingency
 ka<-assocstats(cont_table11)$contingency
 la<-assocstats(cont_table12)$contingency
-# Phi-coefficient
+## Phi-coefficient
 ab<-assocstats(cont_table1)$phi
 bb<-assocstats(cont_table2)$phi
 cb<-assocstats(cont_table3)$phi
@@ -311,7 +306,7 @@ ib<-assocstats(cont_table9)$phi
 jb<-assocstats(cont_table10)$phi
 kb<-assocstats(cont_table11)$phi
 lb<-assocstats(cont_table12)$phi
-#Combining the values 
+## Combining the values 
 Cramer_value <- data.frame( Variable = c("Age", 
                             "Practice BSE", 
                             "Regularly PBSE",  
@@ -329,7 +324,7 @@ Cramer_value <- data.frame( Variable = c("Age",
 
 
 
-#Do you have Knowledge regarding breast cancer?
+# Do you have Knowledge regarding breast cancer?
 
 ####################################################################
 cont_t1 <- table(renamed_decoded$`Knowledge BSE` , renamed_decoded$Age) 
@@ -345,7 +340,7 @@ cont_t10 <-table(renamed_decoded$`Knowledge BSE` , renamed_decoded$`Discharge in
 cont_t11 <-table(renamed_decoded$`Knowledge BSE` , renamed_decoded$`Nipple position change`) 
 cont_t12 <-table(renamed_decoded$`Knowledge BSE` , renamed_decoded$`Color Discharge`)
 
-# Calculate Cramer's V statistic
+## Calculate Cramer's V statistic
 assocstats(cont_t1)$chisq_tests
 assocstats(cont_t2)$chisq_tests
 assocstats(cont_t3)$chisq_tests
@@ -358,7 +353,7 @@ assocstats(cont_t9)$chisq_tests
 assocstats(cont_t10)$chisq_tests
 assocstats(cont_t11)$chisq_tests
 assocstats(cont_t12)$chisq_tests
-# Cramer'V
+## Cramer'V
 aq<-assocstats(cont_t1)$cramer
 bq<-assocstats(cont_t2)$cramer
 cq<-assocstats(cont_t3)$cramer
@@ -372,7 +367,7 @@ jq<-assocstats(cont_t10)$cramer
 kq<-assocstats(cont_t11)$cramer
 lq<-assocstats(cont_t12)$cramer
 
-# Contingency Coeff.
+## Contingency Coeff.
 aw<-assocstats(cont_t1)$contingency
 bw<-assocstats(cont_t2)$contingency
 cw<-assocstats(cont_t3)$contingency
@@ -385,7 +380,7 @@ iw<-assocstats(cont_t9)$contingency
 jw<-assocstats(cont_t10)$contingency
 kw<-assocstats(cont_t11)$contingency
 lw<-assocstats(cont_t12)$contingency
-# Phi-coefficient
+## Phi-coefficient
 abq<-assocstats(cont_table1)$phi
 bbq<-assocstats(cont_table2)$phi
 cbq<-assocstats(cont_table3)$phi
@@ -398,7 +393,7 @@ ibq<-assocstats(cont_table9)$phi
 jbq<-assocstats(cont_table10)$phi
 kbq<-assocstats(cont_table11)$phi
 lbq<-assocstats(cont_table12)$phi
-#Combing the values to a dataframe
+## Combing the values to a dataframe
 CramerValue <- data.frame( Variable = c("Age", 
                                          "Practice BSE", 
                                          "Regularly PBSE",  
